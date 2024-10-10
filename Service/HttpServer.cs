@@ -122,7 +122,8 @@ namespace Server.Service
 
                 UserDto user = JsonConvert.DeserializeObject<UserDto>(jsonString);
 
-                Console.WriteLine($"\nUserDto: {user.Nome}, {user.Email}, {user.Senha}.");
+                Console.WriteLine($"\nUserDto: {user.DisplayName}, {user.Email}, {user.Password}, {user.Disabled}.");
+
 
                 // Adicione a lógica para criar um novo usuário usando os dados do body
                 Console.WriteLine($"New user data: {jsonString}");
