@@ -9,6 +9,11 @@
 
   <ItemGroup>
     <Folder Include="Domain\" />
+    <Folder Include="Keys\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
   </ItemGroup>
 
 </Project>

@@ -17,51 +17,133 @@ namespace Server.Service
 
             while (true)
             {
-                // Get the request context
                 HttpListenerContext context = listener.GetContext();
-                HttpListenerRequest req = context.Request;
-                HttpListenerResponse resp = context.Response;
-
-                // Check if the requested URL is '/index'
-                if (req.Url.AbsolutePath == "/index")
-                {
-                    // Set the content type to HTML
-                    resp.ContentType = "text/html";
-
-                    // Read the index.html file
-                    string serverRoot = AppDomain.CurrentDomain.BaseDirectory;
-                    string htmlFilePath = @"..\..\..\View\index.html";
-                    Console.WriteLine("Diretório atual: " + Environment.CurrentDirectory); // Captura o diretório que chamou o index
-
-                    if (File.Exists(htmlFilePath))
-                    {
-                        string htmlContent = File.ReadAllText(htmlFilePath);
-                        byte[] buffer = Encoding.UTF8.GetBytes(htmlContent);
-
-                        // Write the HTML content to the response
-                        resp.ContentLength64 = buffer.Length;
-                        resp.OutputStream.Write(buffer, 0, buffer.Length);
-                    }
-                    else
-                    {
-                        // Handle file not found
-                        byte[] errorBuffer = Encoding.UTF8.GetBytes("404 - File Not Found");
-                        resp.StatusCode = (int)HttpStatusCode.NotFound;
-                        resp.ContentLength64 = errorBuffer.Length;
-                        resp.OutputStream.Write(errorBuffer, 0, errorBuffer.Length);
-                    }
-                }
-                else
-                {
-                    // Handle other requests (you can expand this part)
-                    byte[] buffer = Encoding.UTF8.GetBytes("Unknown request");
-                    resp.ContentLength64 = buffer.Length;
-                    resp.OutputStream.Write(buffer, 0, buffer.Length);
-                }
-
-                // Close the response
-                resp.OutputStream.Close();
+                ProcessRequest(context);
             }
+        }
+
+        private static void ProcessRequest(HttpListenerContext context)
+        {
+            HttpListenerRequest req = context.Request;
+            HttpListenerResponse resp = context.Response;
+
+            switch (req.HttpMethod)
+            {
+                case "GET":
+                    HandleGetRequest(req, resp);
+                    break;
+
+                case "DELETE":
+                    HandleDeleteRequest(req, resp);
+                    break;
+
+                case "POST":
+                    HandlePostRequest(req, resp);
+                    break;
+
+                default:
+                    HandleUnknownRequest(resp);
+                    break;
+            }
+
+            resp.OutputStream.Close();
+        }
+
+        private static void ServeHtmlFile(HttpListenerResponse resp, string filePath)
+        {
+            resp.ContentType = "text/html";
+
+            if (File.Exists(filePath))
+            {
+                string htmlContent = File.ReadAllText(filePath);
+                byte[] buffer = Encoding.UTF8.GetBytes(htmlContent);
+                resp.ContentLength64 = buffer.Length;
+                resp.OutputStream.Write(buffer, 0, buffer.Length);
+            }
+            else
+            {
+                RespondWithNotFound(resp);
+            }
+        }
+
+        private static void RespondWithUserList(HttpListenerResponse resp)
+        {
+            string jsonResponse = "[{\"id\": 1, \"name\": \"John Doe\"}, {\"id\": 2, \"name\": \"Jane Doe\"}]"; // Exemplo de resposta
+            byte[] buffer = Encoding.UTF8.GetBytes(jsonResponse);
+            resp.ContentType = "application/json";
+            resp.ContentLength64 = buffer.Length;
+            resp.OutputStream.Write(buffer, 0, buffer.Length);
+        }
+
+        private static void HandleGetRequest(HttpListenerRequest req, HttpListenerResponse resp)
+        {
+            if (req.Url.AbsolutePath == "/index")
+            {
+                ServeHtmlFile(resp, @"..\..\..\View\index.html");
+            }
+            else if (req.Url.AbsolutePath == "/users")
+            {
+                RespondWithUserList(resp);
+            }
+            else
+            {
+                HandleUnknownRequest(resp);
+            }
+        }
+
+        private static void HandleDeleteRequest(HttpListenerRequest req, HttpListenerResponse resp)
+        {
+            if (req.Url.AbsolutePath.StartsWith("/users/"))
+            {
+                string userId = req.Url.AbsolutePath.Substring("/users/".Length);
+                // Adicione a lógica para deletar o usuário com o userId
+                Console.WriteLine($"User {userId} deleted.");
+                byte[] buffer = Encoding.UTF8.GetBytes($"User {userId} deleted.");
+                resp.ContentLength64 = buffer.Length;
+                resp.OutputStream.Write(buffer, 0, buffer.Length);
+            }
+            else
+            {
+                HandleUnknownRequest(resp);
+            }
+        }
+
+        private static void HandlePostRequest(HttpListenerRequest req, HttpListenerResponse resp)
+        {
+            if (req.Url.AbsolutePath == "/users")
+            {
+                using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
+                string body = reader.ReadToEnd();
+
+                // Adicione a lógica para criar um novo usuário usando os dados do body
+                Console.WriteLine($"New user data: {body}");
+
+                // Responde o front
+                byte[] buffer = Encoding.UTF8.GetBytes("{\"message\":\"User created successfully.\"}");
+                resp.ContentType = "application/json";
+                resp.ContentLength64 = buffer.Length;
+                resp.OutputStream.Write(buffer, 0, buffer.Length);
+
+            }
+            else
+            {
+                HandleUnknownRequest(resp);
+            }
+        }
+
+        private static void HandleUnknownRequest(HttpListenerResponse resp)
+        {
+            byte[] buffer = Encoding.UTF8.GetBytes("Unknown request");
+            resp.ContentLength64 = buffer.Length;
+            resp.OutputStream.Write(buffer, 0, buffer.Length);
+        }
+
+        private static void RespondWithNotFound(HttpListenerResponse resp)
+        {
+            byte[] errorBuffer = Encoding.UTF8.GetBytes("404 - File Not Found");
+            resp.StatusCode = (int)HttpStatusCode.NotFound;
+            resp.ContentLength64 = errorBuffer.Length;
+            resp.OutputStream.Write(errorBuffer, 0, errorBuffer.Length);
         }
     }
 }
