@@ -1,8 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Newtonsoft.Json;
+// Personal Namespaces
+using Server.Domain.DTO;
 
 namespace Server.Service
 {
@@ -114,12 +116,16 @@ namespace Server.Service
         {
             // New user data: {"nome":"samuel","email":"oliveira.samuel.edu@gmail.com","senha":"123"}
             if (req.Url.AbsolutePath == "/users")
-            {
+            {   
                 using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
-                string body = reader.ReadToEnd();
+                string jsonString = reader.ReadToEnd();
+
+                UserDto user = JsonConvert.DeserializeObject<UserDto>(jsonString);
+
+                Console.WriteLine($"\nUserDto: {user.Nome}, {user.Email}, {user.Senha}.");
 
                 // Adicione a lógica para criar um novo usuário usando os dados do body
-                Console.WriteLine($"New user data: {body}");
+                Console.WriteLine($"New user data: {jsonString}");
 
                 // Responde o front
                 byte[] buffer = Encoding.UTF8.GetBytes("{\"message\":\"User created successfully.\"}");
