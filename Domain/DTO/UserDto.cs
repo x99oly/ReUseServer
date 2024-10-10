@@ -1,4 +1,6 @@
-﻿namespace Server.Domain.DTO
+﻿using FirebaseAdmin.Auth;
+
+namespace Server.Domain.DTO
 {
     internal class UserDto
     {
@@ -20,6 +22,21 @@
             PhoneNumber = null;
             PhotoUrl = null;
             Disabled = false;
+        }
+
+        // Método para converter para UserRecordsArgs
+        public UserRecordArgs ToUserRecordArgs()
+        {
+            return new UserRecordArgs()
+            {
+                Email = this.Email,
+                EmailVerified = this.EmailVerified,
+                PhoneNumber = this.PhoneNumber,
+                Password = this.Password,
+                DisplayName = this.DisplayName,
+                PhotoUrl = this.PhotoUrl,
+                Disabled = this.Disabled,
+            };
         }
     }
 }

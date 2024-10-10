@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using FirebaseAdmin.Auth;
 using Newtonsoft.Json;
 // Personal Namespaces
 using Server.Domain.DTO;
@@ -10,7 +11,7 @@ namespace Server.Service
 {
     class HttpServer
     {
-        public static void StartHttpServer()
+        public async static void StartHttpServer()
         {
             using var listener = new HttpListener();
             listener.Prefixes.Add("http://localhost:8001/"); // Endereço raiz da aplicação / servidor
@@ -25,7 +26,7 @@ namespace Server.Service
             }
         }
 
-        private static void ProcessRequest(HttpListenerContext context)
+        private async static void ProcessRequest(HttpListenerContext context)
         {
             HttpListenerRequest req = context.Request;
             HttpListenerResponse resp = context.Response;
@@ -78,7 +79,6 @@ namespace Server.Service
             resp.OutputStream.Write(buffer, 0, buffer.Length);
         }
 
-
         private static void HandleGetRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
             if (req.Url.AbsolutePath == "/index")
@@ -112,11 +112,11 @@ namespace Server.Service
             }
         }
 
-        private static void HandlePostRequest(HttpListenerRequest req, HttpListenerResponse resp)
+        private static async void HandlePostRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
             // New user data: {"nome":"samuel","email":"oliveira.samuel.edu@gmail.com","senha":"123"}
             if (req.Url.AbsolutePath == "/users")
-            {   
+            {
                 using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
                 string jsonString = reader.ReadToEnd();
 
@@ -124,15 +124,18 @@ namespace Server.Service
 
                 Console.WriteLine($"\nUserDto: {user.DisplayName}, {user.Email}, {user.Password}, {user.Disabled}.");
 
+                UserRecordArgs userRecordArgs = user.ToUserRecordArgs();
+
+                UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(userRecordArgs);
 
                 // Adicione a lógica para criar um novo usuário usando os dados do body
-                Console.WriteLine($"New user data: {jsonString}");
+                Console.WriteLine($"New user Created!");
 
                 // Responde o front
-                byte[] buffer = Encoding.UTF8.GetBytes("{\"message\":\"User created successfully.\"}");
-                resp.ContentType = "application/json";
-                resp.ContentLength64 = buffer.Length;
-                resp.OutputStream.Write(buffer, 0, buffer.Length);
+                //byte[] buffer = Encoding.UTF8.GetBytes("{\"message\":\"User created successfully.\"}");
+                //resp.ContentType = "application/json";
+                //resp.ContentLength64 = buffer.Length;
+                //resp.OutputStream.Write(buffer, 0, buffer.Length);
 
             }
             else
