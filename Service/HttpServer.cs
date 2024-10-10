@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 
 namespace Server.Service
 {
@@ -75,6 +76,7 @@ namespace Server.Service
             resp.OutputStream.Write(buffer, 0, buffer.Length);
         }
 
+
         private static void HandleGetRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
             if (req.Url.AbsolutePath == "/index")
@@ -110,6 +112,7 @@ namespace Server.Service
 
         private static void HandlePostRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
+            // New user data: {"nome":"samuel","email":"oliveira.samuel.edu@gmail.com","senha":"123"}
             if (req.Url.AbsolutePath == "/users")
             {
                 using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
