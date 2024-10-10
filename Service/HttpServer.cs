@@ -54,10 +54,26 @@ namespace Server.Service
             resp.OutputStream.Close();
         }
 
-        private static void ServeHtmlFile(HttpListenerResponse resp, string filePath)
+            private static void ServeHtmlFile(HttpListenerResponse resp, string filePath)
+            {
+                resp.ContentType = "text/html";
+
+                if (File.Exists(filePath))
+                {
+                    string htmlContent = File.ReadAllText(filePath);
+                    byte[] buffer = Encoding.UTF8.GetBytes(htmlContent);
+                    resp.ContentLength64 = buffer.Length;
+                    resp.OutputStream.Write(buffer, 0, buffer.Length);
+                }
+                else
+                {
+                    RespondWithNotFound(resp);
+                }
+            }
+
+        private static void ServeRegisterFile(HttpListenerResponse resp, string filePath)
         {
             resp.ContentType = "text/html";
-
             if (File.Exists(filePath))
             {
                 string htmlContent = File.ReadAllText(filePath);
@@ -71,28 +87,16 @@ namespace Server.Service
             }
         }
 
-        private static void RespondWithUserList(HttpListenerResponse resp)
-        {
-            string jsonResponse = "[{\"id\": 1, \"name\": \"John Doe\"}, {\"id\": 2, \"name\": \"Jane Doe\"}]"; // Exemplo de resposta
-            byte[] buffer = Encoding.UTF8.GetBytes(jsonResponse);
-            resp.ContentType = "application/json";
-            resp.ContentLength64 = buffer.Length;
-            resp.OutputStream.Write(buffer, 0, buffer.Length);
-        }
-
         private static void HandleGetRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
-            if (req.Url.AbsolutePath == "/index")
+
+            if (req.Url.AbsolutePath == "/cadastro")
             {
-                ServeHtmlFile(resp, @"..\..\..\View\index.html");
-            }
-            else if (req.Url.AbsolutePath == "/users")
-            {
-                RespondWithUserList(resp);
+                ServeRegisterFile(resp, @"..\..\..\View\cadastro.html");
             }
             else
             {
-                HandleUnknownRequest(resp);
+                ServeHtmlFile(resp, @"..\..\..\View\index.html");
             }
         }
 
@@ -115,27 +119,33 @@ namespace Server.Service
 
         private static async void HandlePostRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
-            // New user data: {"nome":"samuel","email":"oliveira.samuel.edu@gmail.com","senha":"123"}
             if (req.Url.AbsolutePath == "/users")
             {
                 using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
-                string jsonString = reader.ReadToEnd();
+                string jsonString = await reader.ReadToEndAsync();
                 UserDto user = JsonConvert.DeserializeObject<UserDto>(jsonString);
 
                 UserRecordArgs userRecordArgs = user.ToUserRecordArgs();
 
-                UserService Register = new UserService();
-                Register.CreateUserAsync(userRecordArgs).Wait();
+                UserService register = new UserService();
 
-                // Adicione a lógica para criar um novo usuário usando os dados do body
-                Console.WriteLine($"New user Created!");
-
-                // Responde o front
-                //byte[] buffer = Encoding.UTF8.GetBytes("{\"message\":\"User created successfully.\"}");
-                //resp.ContentType = "application/json";
-                //resp.ContentLength64 = buffer.Length;
-                //resp.OutputStream.Write(buffer, 0, buffer.Length);
-
+                try
+                {
+                    await register.CreateUserAsync(userRecordArgs);
+                    resp.StatusCode = (int)HttpStatusCode.Created;
+                    resp.StatusDescription = "Created";
+                    await resp.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("{\"message\":\"Situado na mata\"}"));
+                }
+                catch (Exception ex)
+                {
+                    resp.StatusCode = (int)HttpStatusCode.BadRequest;
+                    resp.StatusDescription = "Bad Request";
+                    await resp.OutputStream.WriteAsync(Encoding.UTF8.GetBytes($"{{\"message\":\"{ex.Message}\"}}")); // Retorna mensagem em formato JSON
+                }
+                finally
+                {
+                    resp.Close();
+                }
             }
             else
             {
