@@ -6,6 +6,7 @@ using FirebaseAdmin.Auth;
 using Newtonsoft.Json;
 // Personal Namespaces
 using Server.Domain.DTO;
+using Server.Service.User;
 
 namespace Server.Service
 {
@@ -119,14 +120,12 @@ namespace Server.Service
             {
                 using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
                 string jsonString = reader.ReadToEnd();
-
                 UserDto user = JsonConvert.DeserializeObject<UserDto>(jsonString);
-
-                Console.WriteLine($"\nUserDto: {user.DisplayName}, {user.Email}, {user.Password}, {user.Disabled}.");
 
                 UserRecordArgs userRecordArgs = user.ToUserRecordArgs();
 
-                UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(userRecordArgs);
+                UserService Register = new UserService();
+                Register.CreateUserAsync(userRecordArgs).Wait();
 
                 // Adicione a lógica para criar um novo usuário usando os dados do body
                 Console.WriteLine($"New user Created!");
