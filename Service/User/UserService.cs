@@ -8,7 +8,7 @@ using Server.Interface;
 
 namespace Server.Service.User
 {
-    public class UserService : IUserService
+    public class UserService
     {
         public async Task<UserRecord> CreateUserAsync(UserRecordArgs UserArgs)
         {
