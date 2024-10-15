@@ -23,11 +23,11 @@ namespace Server.Service
                 $"\nCheck our home page: {url}index"+
                 $"\nCheck our register paga: {url}cadastro");
 
-            StartServerListner(listener);
+            StartServerListener(listener);
             
         }
 
-        private void StartServerListner(HttpListener listener)
+        private void StartServerListener(HttpListener listener)
         {
             while (true)
             {
