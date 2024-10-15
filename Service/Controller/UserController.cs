@@ -59,7 +59,6 @@ namespace Server.Service.Controller
 
         private static void HandleGetRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
-
             if (req.Url.AbsolutePath == "/cadastro")
             {
                 ServeRegisterFile(resp, @"..\..\..\View\cadastro.html");
@@ -73,11 +72,30 @@ namespace Server.Service.Controller
                 resp.ContentType = "application/json";
                 GetUserService.HandleGetAllUsersRequest(req, resp);
             }
+            // Novo endpoint para buscar usuário por ID
+            else if (req.Url.AbsolutePath == "/api/users/id")
+            {
+                resp.ContentType = "application/json";
+                GetUserService.HandleGetUserByIdRequest(req, resp);
+            }
+            // Novo endpoint para buscar usuário por email
+            else if (req.Url.AbsolutePath == "/api/users/email")
+            {
+                resp.ContentType = "application/json";
+                GetUserService.HandleGetUserByEmailRequest(req, resp);
+            }
+            // Novo endpoint para buscar usuário por telefone
+            else if (req.Url.AbsolutePath == "/api/users/phone")
+            {
+                resp.ContentType = "application/json";
+                GetUserService.HandleGetUserByPhoneRequest(req, resp);
+            }
             else
             {
                 ServeHtmlFile(resp, @"..\..\..\View\index.html");
             }
         }
+
     }
 
 }

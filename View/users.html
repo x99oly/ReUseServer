@@ -17,18 +17,35 @@
         h1 {
             margin-bottom: 30px;
         }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Lista de Usuários</h1>
+
+        <!-- Seção de Filtro -->
+        <div class="filter-section">
+            <div class="input-group mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Digite para buscar...">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="applyFilter('id')">Buscar por ID</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="applyFilter('email')">Buscar por Email</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="applyFilter('phone')">Buscar por Telefone</button>
+                </div>
+            </div>
+        </div>
+
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>Nome</th>
+                    <th>ID</th>
                     <th>Email</th>
-                    <th>ID</th> <!-- Adicionado ID aqui -->
+                    <th>Nome</th>
                 </tr>
             </thead>
             <tbody id="userTableBody">
@@ -45,14 +62,14 @@
         // Função para buscar usuários
         async function fetchUsers() {
             try {
-                const response = await fetch('/api/users'); // Altere para o novo endpoint
+                const response = await fetch('/api/users'); // Endpoint para todos os usuários
                 if (!response.ok) {
                     throw new Error('Erro ao buscar usuários');
                 }
                 const data = await response.json();
 
-                // Aqui você precisa analisar a string JSON
-                const users = JSON.parse(data.message); // Faz o parse da string para um objeto
+                // Faz o parse da string JSON
+                const users = JSON.parse(data.message);
 
                 console.log(users);
                 renderUserTable(users);
@@ -63,29 +80,59 @@
 
         // Função para renderizar a lista de usuários na tabela
         function renderUserTable(users) {
-            const tableBody = document.getElementById('userTableBody'); // O ID deve corresponder ao seu HTML
-            tableBody.innerHTML = ''; // Limpa o conteúdo atual
+            const tableBody = document.getElementById('userTableBody');
+            tableBody.innerHTML = '';
 
             users.forEach(user => {
-                // Cria uma nova linha para cada usuário
                 const row = document.createElement('tr');
 
-                // Cria células para cada propriedade do usuário
-                const displayNameCell = document.createElement('td');
-                displayNameCell.textContent = user.DisplayName || 'N/A'; // Para lidar com null
-                row.appendChild(displayNameCell);
+                const uidCell = document.createElement('td');
+                uidCell.textContent = user.Uid;
+                row.appendChild(uidCell);
 
                 const emailCell = document.createElement('td');
                 emailCell.textContent = user.Email;
                 row.appendChild(emailCell);
 
-                const uidCell = document.createElement('td');
-                uidCell.textContent = user.Uid; // Coloca o ID aqui
-                row.appendChild(uidCell);
+                const displayNameCell = document.createElement('td');
+                displayNameCell.textContent = user.DisplayName || 'N/A';
+                row.appendChild(displayNameCell);
 
-                // Adiciona a linha à tabela
                 tableBody.appendChild(row);
             });
+        }
+
+        // Função para aplicar o filtro de busca
+        async function applyFilter(filterType) {
+            const query = document.getElementById('searchInput').value;
+
+            if (!query) {
+                alert('Por favor, digite um valor para buscar.');
+                return;
+            }
+
+            let url;
+            if (filterType === 'id') {
+                url = `/api/users/id?uid=${query}`;
+            } else if (filterType === 'email') {
+                url = `/api/users/email?email=${query}`;
+            } else if (filterType === 'phone') {
+                url = `/api/users/phone?phoneNumber=${query}`;
+            }
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar usuários');
+                }
+                const data = await response.json();
+
+                const user = JSON.parse(data.message);
+                renderUserTable([user]); // Renderiza um único usuário no caso da busca por ID, email ou telefone
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao buscar o usuário.');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', fetchUsers);
