@@ -68,12 +68,15 @@ namespace Server.Service.Controller
             {
                 ServeRegisterFile(resp, @"..\..\..\View\users.html");
             }
+            else if (req.Url.AbsolutePath == "/api/users")
+            {
+                resp.ContentType = "application/json";
+                GetUserService.HandleGetAllUsersRequest(req, resp);
+            }
             else
             {
                 ServeHtmlFile(resp, @"..\..\..\View\index.html");
             }
-
-
         }
     }
 

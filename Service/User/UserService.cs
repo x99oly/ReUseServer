@@ -21,15 +21,59 @@ namespace Server.Service.User
         }
 
         /// <summary>
-        /// Chama o FirebaseAdmin para recuperar os dados do usuário.
-        /// Retorna metadados
+        /// Chama o FirebaseAdmin para recuperar os dados do usuário com base no ID do usuário (UID).
         /// </summary>
-        /// <param name="uid"></param>
-        /// <returns>UserRecord obj</returns>
+        /// <param name="uid">ID único do usuário no Firebase</param>
+        /// <returns>Retorna um objeto <see cref="UserRecord"/> contendo os dados do usuário.</returns>
         public static async Task<UserRecord> GetUserByIdAsync(string uid)
         {
             return await FirebaseAuth.DefaultInstance.GetUserAsync(uid);
         }
+
+        /// <summary>
+        /// Chama o FirebaseAdmin para recuperar os dados do usuário com base no endereço de e-mail.
+        /// </summary>
+        /// <param name="email">Endereço de e-mail do usuário registrado no Firebase</param>
+        /// <returns>Retorna um objeto <see cref="UserRecord"/> contendo os dados do usuário.</returns>
+        public static async Task<UserRecord> GetUserByEmailAsync(string email)
+        {
+            return await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(email);
+        }
+
+        /// <summary>
+        /// Chama o FirebaseAdmin para recuperar os dados do usuário com base no número de telefone.
+        /// </summary>
+        /// <param name="phoneNumber">Número de telefone do usuário registrado no Firebase</param>
+        /// <returns>Retorna um objeto <see cref="UserRecord"/> contendo os dados do usuário.</returns>
+        public static async Task<UserRecord> GetUserByPhone(string phoneNumber)
+        {
+            return await FirebaseAuth.DefaultInstance.GetUserByPhoneNumberAsync(phoneNumber);
+        }
+
+
+
+        /// <summary>
+        /// Recupera todos os usuários do Firebase Authentication.
+        /// </summary>
+        /// <returns>Uma lista de objetos UserRecord representando todos os usuários.</returns>
+        public static async Task<List<ExportedUserRecord>> GetAllUsersAsync()
+        {
+            List<ExportedUserRecord> allUsers = new List<ExportedUserRecord>();
+
+            // Inicia a listagem de usuários a partir do início, 1000 de cada vez.
+            var pagedEnumerable = FirebaseAuth.DefaultInstance.ListUsersAsync(null);
+            var responses = pagedEnumerable.AsRawResponses().GetAsyncEnumerator();
+
+            while (await responses.MoveNextAsync())
+            {
+                ExportedUserRecords response = responses.Current;
+
+                allUsers.AddRange(response.Users);
+            }
+
+            return allUsers;
+        }
+
 
         /// <summary>
         /// Chama o FirebaseAdmin para deletar um usuário da base de dados.

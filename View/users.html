@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Usuários</title>
-    <!-- Incluindo Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -29,6 +28,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Email</th>
+                    <th>ID</th> <!-- Adicionado ID aqui -->
                 </tr>
             </thead>
             <tbody id="userTableBody">
@@ -37,34 +37,58 @@
         </table>
     </div>
 
-    <!-- Incluindo jQuery e Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
-    // Lista de usuários (exemplo de dados)
-    const users = [
-        { name: 'João Silva', email: 'joao.silva@example.com' },
-        { name: 'Maria Oliveira', email: 'maria.oliveira@example.com' },
-        { name: 'Carlos Santos', email: 'carlos.santos@example.com' },
-        { name: 'Ana Costa', email: 'ana.costa@example.com' }
-    ];
+        // Função para buscar usuários
+        async function fetchUsers() {
+            try {
+                const response = await fetch('/api/users'); // Altere para o novo endpoint
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar usuários');
+                }
+                const data = await response.json();
 
-    // Função para renderizar a lista de usuários na tabela
-    function renderUserTable(users) {
-        const tableBody = document.getElementById('userTableBody');
-        users.forEach(user => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${user.name}</td><td>${user.email}</td>`;
-            tableBody.appendChild(row);
-        });
-    }
+                // Aqui você precisa analisar a string JSON
+                const users = JSON.parse(data.message); // Faz o parse da string para um objeto
 
-    // Chama a função para renderizar a tabela ao carregar a página
-    document.addEventListener('DOMContentLoaded', () => {
-        renderUserTable(users);
-    });
+                console.log(users);
+                renderUserTable(users);
+            } catch (error) {
+                console.error('Erro:', error);
+            }
+        }
+
+        // Função para renderizar a lista de usuários na tabela
+        function renderUserTable(users) {
+            const tableBody = document.getElementById('userTableBody'); // O ID deve corresponder ao seu HTML
+            tableBody.innerHTML = ''; // Limpa o conteúdo atual
+
+            users.forEach(user => {
+                // Cria uma nova linha para cada usuário
+                const row = document.createElement('tr');
+
+                // Cria células para cada propriedade do usuário
+                const displayNameCell = document.createElement('td');
+                displayNameCell.textContent = user.DisplayName || 'N/A'; // Para lidar com null
+                row.appendChild(displayNameCell);
+
+                const emailCell = document.createElement('td');
+                emailCell.textContent = user.Email;
+                row.appendChild(emailCell);
+
+                const uidCell = document.createElement('td');
+                uidCell.textContent = user.Uid; // Coloca o ID aqui
+                row.appendChild(uidCell);
+
+                // Adiciona a linha à tabela
+                tableBody.appendChild(row);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchUsers);
     </script>
 
 </body>
