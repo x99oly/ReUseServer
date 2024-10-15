@@ -64,6 +64,10 @@ namespace Server.Service.Controller
             {
                 ServeRegisterFile(resp, @"..\..\..\View\cadastro.html");
             }
+            else if (req.Url.AbsolutePath == "/users")
+            {
+                ServeRegisterFile(resp, @"..\..\..\View\users.html");
+            }
             else
             {
                 ServeHtmlFile(resp, @"..\..\..\View\index.html");

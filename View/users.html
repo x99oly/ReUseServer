@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+    <!-- Incluindo Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Lista de Usuários</h1>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- As linhas da tabela serão adicionadas aqui dinamicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Incluindo jQuery e Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+    // Lista de usuários (exemplo de dados)
+    const users = [
+        { name: 'João Silva', email: 'joao.silva@example.com' },
+        { name: 'Maria Oliveira', email: 'maria.oliveira@example.com' },
+        { name: 'Carlos Santos', email: 'carlos.santos@example.com' },
+        { name: 'Ana Costa', email: 'ana.costa@example.com' }
+    ];
+
+    // Função para renderizar a lista de usuários na tabela
+    function renderUserTable(users) {
+        const tableBody = document.getElementById('userTableBody');
+        users.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${user.name}</td><td>${user.email}</td>`;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Chama a função para renderizar a tabela ao carregar a página
+    document.addEventListener('DOMContentLoaded', () => {
+        renderUserTable(users);
+    });
+    </script>
+
+</body>
+</html>
