@@ -1,42 +1,16 @@
-﻿using System;
-using System.Net;
-using System.Text;
+﻿
+
 using FirebaseAdmin.Auth;
 using Newtonsoft.Json;
-// Personal Namespaces
 using Server.Service.User;
-using Server.Interface;
+using System.Net;
+using System.Text;
 
-namespace Server.Service
+namespace Server.Service.Controller
 {
-    class HttpServer : IServidor
+    internal class UserController
     {
-        /// <summary>
-        /// Inicia o serverHTTP e fornece os links das páginas no console.
-        /// </summary>
-        public void StartServer(string url)
-        {
-            using var listener = new HttpListener();
-            listener.Prefixes.Add($"{url}"); // Endereço raiz da aplicação / servidor
-            listener.Start();
-            Console.WriteLine($"Server is listening on {url}..." +
-                $"\nCheck our home page: {url}index"+
-                $"\nCheck our register paga: {url}cadastro");
-
-            StartServerListener(listener);
-            
-        }
-
-        private void StartServerListener(HttpListener listener)
-        {
-            while (true)
-            {
-                HttpListenerContext context = listener.GetContext();
-                ProcessRequest(context);
-            }
-        }
-
-        private async static void ProcessRequest(HttpListenerContext context)
+        public async void ProcessRequest(HttpListenerContext context)
         {
             HttpListenerRequest req = context.Request;
             HttpListenerResponse resp = context.Response;
@@ -62,23 +36,22 @@ namespace Server.Service
 
             resp.OutputStream.Close();
         }
-
         private static void ServeHtmlFile(HttpListenerResponse resp, string filePath)
-            {
-                resp.ContentType = "text/html";
+        {
+            resp.ContentType = "text/html";
 
-                if (File.Exists(filePath))
-                {
-                    string htmlContent = File.ReadAllText(filePath);
-                    byte[] buffer = Encoding.UTF8.GetBytes(htmlContent);
-                    resp.ContentLength64 = buffer.Length;
-                    resp.OutputStream.Write(buffer, 0, buffer.Length);
-                }
-                else
-                {
-                    RespondWithNotFound(resp);
-                }
+            if (File.Exists(filePath))
+            {
+                string htmlContent = File.ReadAllText(filePath);
+                byte[] buffer = Encoding.UTF8.GetBytes(htmlContent);
+                resp.ContentLength64 = buffer.Length;
+                resp.OutputStream.Write(buffer, 0, buffer.Length);
             }
+            else
+            {
+                RespondWithNotFound(resp);
+            }
+        }
 
         private static void ServeRegisterFile(HttpListenerResponse resp, string filePath)
         {
@@ -178,4 +151,6 @@ namespace Server.Service
             resp.OutputStream.Write(errorBuffer, 0, errorBuffer.Length);
         }
     }
+
 }
+
