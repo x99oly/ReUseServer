@@ -11,7 +11,7 @@ namespace Server.Interface
         /// <summary>
         /// Método de contrato de Interface para instânciar um server HTTP ou HTTPS
         /// </summary>
-        public void StartServer();
+        public void StartServer(string url);
 
     }
 }

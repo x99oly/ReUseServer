@@ -14,14 +14,21 @@ namespace Server.Service
         /// <summary>
         /// Inicia o serverHTTP e fornece os links das páginas no console.
         /// </summary>
-        public void StartServer()
+        public void StartServer(string url)
         {
             using var listener = new HttpListener();
-            listener.Prefixes.Add("http://localhost:8001/"); // Endereço raiz da aplicação / servidor
+            listener.Prefixes.Add($"{url}"); // Endereço raiz da aplicação / servidor
             listener.Start();
-            Console.WriteLine("Server is listening on http://localhost:8001/..." +
-                "\nCheck our home page: http://localhost:8001/index");
+            Console.WriteLine($"Server is listening on {url}..." +
+                $"\nCheck our home page: {url}index"+
+                $"\nCheck our register paga: {url}cadastro");
 
+            StartServerListner(listener);
+            
+        }
+
+        private void StartServerListner(HttpListener listener)
+        {
             while (true)
             {
                 HttpListenerContext context = listener.GetContext();

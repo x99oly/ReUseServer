@@ -13,4 +13,4 @@ Console.WriteLine("Firebase SDK inicializado!");
 
 IServidor server = new HttpServer();
 
-server.StartServer(); // Substituir para interface
+server.StartServer("http://localhost:8001/"); // Substituir para interface
