@@ -58,7 +58,7 @@ namespace Server.Service.User
         /// <returns>Uma lista de objetos UserRecord representando todos os usuários.</returns>
         public static async Task<List<ExportedUserRecord>> GetAllUsersAsync()
         {
-            List<ExportedUserRecord> allUsers = new List<ExportedUserRecord>();
+            var allUsers = new List<ExportedUserRecord>();
 
             // Inicia a listagem de usuários a partir do início, 1000 de cada vez.
             var pagedEnumerable = FirebaseAuth.DefaultInstance.ListUsersAsync(null);

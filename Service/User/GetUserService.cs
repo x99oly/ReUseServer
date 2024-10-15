@@ -23,7 +23,6 @@ namespace Server.Service.User
         /// <returns>Task assíncrona que processa a requisição</returns>
         public static async Task HandleGetAllUsersRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
-            string jsonString = await UserService.JsonToString(req, resp);
 
             try
             {
