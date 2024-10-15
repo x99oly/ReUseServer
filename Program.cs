@@ -1,4 +1,5 @@
 ﻿using Server.Service.Host;
+using Server.Service.User;
 using Server.Interface;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
@@ -13,4 +14,4 @@ Console.WriteLine("Firebase SDK inicializado!");
 
 IServidor server = new HttpServer();
 
-server.StartServer("http://localhost:8001/"); // Substituir para interface
+server.StartServer("http://localhost:8001/");

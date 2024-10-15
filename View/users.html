@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .delete-btn {
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Lista de Usuários</h1>
+
+        <!-- Seção de Filtro -->
+        <div class="filter-section">
+            <div class="input-group mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Digite para buscar...">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="applyFilter('id')">Buscar por ID</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="applyFilter('email')">Buscar por Email</button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="applyFilter('phone')">Buscar por Telefone</button>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Nome</th>
+                    <th>Ações</th> <!-- Coluna para as ações, como excluir -->
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- As linhas da tabela serão adicionadas aqui dinamicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+    3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Função para buscar usuários
+        async function fetchUsers() {
+            try {
+                const response = await fetch('/api/users'); // Endpoint para todos os usuários
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar usuários');
+                }
+                const data = await response.json();
+
+                // Faz o parse da string JSON
+                const users = JSON.parse(data.message);
+
+                console.log(users);
+                renderUserTable(users);
+            } catch (error) {
+                console.error('Erro:', error);
+            }
+        }
+
+        // Função para renderizar a lista de usuários na tabela
+        function renderUserTable(users) {
+            const tableBody = document.getElementById('userTableBody');
+            tableBody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+
+                const uidCell = document.createElement('td');
+                uidCell.textContent = user.Uid;
+                row.appendChild(uidCell);
+
+                const emailCell = document.createElement('td');
+                emailCell.textContent = user.Email;
+                row.appendChild(emailCell);
+
+                const displayNameCell = document.createElement('td');
+                displayNameCell.textContent = user.DisplayName || 'N/A';
+                row.appendChild(displayNameCell);
+
+                // Cria uma célula para o botão de excluir
+                const actionsCell = document.createElement('td');
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Excluir';
+                deleteButton.className = 'btn btn-danger';
+
+                // Adiciona um EventListener para o botão de excluir
+                deleteButton.addEventListener('click', async () => {
+                    const uid = uidCell.textContent; // Pega o UID do usuário
+                    await deleteUser(uid); // Passa o UID do usuário
+                });
+
+                actionsCell.appendChild(deleteButton);
+                row.appendChild(actionsCell);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+
+        // Função para aplicar o filtro de busca
+        async function applyFilter(filterType) {
+            const query = document.getElementById('searchInput').value;
+
+            if (!query) {
+                alert('Por favor, digite um valor para buscar.');
+                return;
+            }
+
+            let url;
+            if (filterType === 'id') {
+                url = `/api/users/id?uid=${query}`;
+            } else if (filterType === 'email') {
+                url = `/api/users/email?email=${query}`;
+            } else if (filterType === 'phone') {
+                url = `/api/users/phone?phoneNumber=${query}`;
+            }
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar usuários');
+                }
+                const data = await response.json();
+
+                const user = JSON.parse(data.message);
+                renderUserTable([user]); // Renderiza um único usuário no caso da busca por ID, email ou telefone
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao buscar o usuário.');
+            }
+        }
+
+        // Função para deletar um usuário
+        async function deleteUser(uid) {
+            if (confirm('Tem certeza que deseja excluir este usuário?')) {
+                try {
+                    // Faz a requisição DELETE diretamente para a raiz do documento
+                    const response = await fetch(`/api/users`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ uid }) // Envia o UID no corpo da requisição
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Erro ao excluir usuário');
+                    }
+
+                    // Após a exclusão, recarrega a lista de usuários
+                    fetchUsers();
+                } catch (error) {
+                    console.error('Erro ao excluir usuário:', error);
+                    alert('Erro ao excluir o usuário.');
+                }
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+    </script>
+
+</body>
+</html>
