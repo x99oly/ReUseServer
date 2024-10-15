@@ -18,7 +18,7 @@ namespace Server.Service.Controller
                     break;
 
                 case "DELETE":
-                    // HandleDeleteRequest(req, resp);
+                    DeleteUserService.HandleDeleteRequest(req, resp);
                     break;
 
                 case "POST":
