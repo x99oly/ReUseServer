@@ -2,17 +2,17 @@
 
 namespace Server.Domain.DTO
 {
-    internal class UserDto
+    internal class User
     {
         public string DisplayName { get; set; }
         public string Email { get; set; }
         public bool EmailVerified { get; set; }
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
         public string Password { get; set; }
-        public string PhotoUrl { get; set; }
+        public string? PhotoUrl { get; set; }
         public bool Disabled { get; set; }
 
-        public UserDto(String nome, string email, string senha)
+        public User(String nome, string email, string senha)
         {
             DisplayName = nome;
             Email = email;
@@ -24,7 +24,10 @@ namespace Server.Domain.DTO
             Disabled = false;
         }
 
-        // Método para converter para UserRecordsArgs
+        /// <summary>
+        /// Converte o obj UserDto em UserRecordsArgs (exigido pelo firebase)
+        /// </summary>
+        /// <returns>UserRecordsArgs object</returns>
         public UserRecordArgs ToUserRecordArgs()
         {
             return new UserRecordArgs()

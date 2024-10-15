@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Net;
 using System.Text;
-using System.Text.Json;
 using FirebaseAdmin.Auth;
 using Newtonsoft.Json;
 // Personal Namespaces
-using Server.Domain.DTO;
 using Server.Service.User;
+using Server.Interface;
 
 namespace Server.Service
 {
-    class HttpServer
+    class HttpServer : IServidor
     {
-        public async static void StartHttpServer()
+        /// <summary>
+        /// Inicia o serverHTTP e fornece os links das páginas no console.
+        /// </summary>
+        public void StartServer()
         {
             using var listener = new HttpListener();
             listener.Prefixes.Add("http://localhost:8001/"); // Endereço raiz da aplicação / servidor
@@ -54,7 +56,7 @@ namespace Server.Service
             resp.OutputStream.Close();
         }
 
-            private static void ServeHtmlFile(HttpListenerResponse resp, string filePath)
+        private static void ServeHtmlFile(HttpListenerResponse resp, string filePath)
             {
                 resp.ContentType = "text/html";
 
@@ -123,11 +125,12 @@ namespace Server.Service
             {
                 using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
                 string jsonString = await reader.ReadToEndAsync();
-                UserDto user = JsonConvert.DeserializeObject<UserDto>(jsonString);
+
+                Domain.DTO.User? user = JsonConvert.DeserializeObject<Domain.DTO.User>(jsonString);
 
                 UserRecordArgs userRecordArgs = user.ToUserRecordArgs();
 
-                UserService register = new UserService();
+                var register = new UserService();
 
                 try
                 {

@@ -1,4 +1,5 @@
 ﻿using Server.Service;
+using Server.Interface;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 
@@ -10,4 +11,6 @@ FirebaseApp.Create(new AppOptions()
 });
 Console.WriteLine("Firebase SDK inicializado!");
 
-HttpServer.StartHttpServer();
+IServidor server = new HttpServer();
+
+server.StartServer(); // Substituir para interface
