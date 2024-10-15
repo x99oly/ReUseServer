@@ -1,8 +1,4 @@
-﻿
-
-using FirebaseAdmin.Auth;
-using Newtonsoft.Json;
-using Server.Service.User;
+﻿using Server.Service.User;
 using System.Net;
 using System.Text;
 
@@ -22,19 +18,17 @@ namespace Server.Service.Controller
                     break;
 
                 case "DELETE":
-                    HandleDeleteRequest(req, resp);
+                    // HandleDeleteRequest(req, resp);
                     break;
 
                 case "POST":
-                    HandlePostRequest(req, resp);
+                    await PostUserService.HandlePostRequest(req, resp);
                     break;
 
                 default:
-                    HandleUnknownRequest(resp);
+                    // HandleUnknownRequest(resp);
                     break;
             }
-
-            resp.OutputStream.Close();
         }
         private static void ServeHtmlFile(HttpListenerResponse resp, string filePath)
         {
@@ -47,10 +41,7 @@ namespace Server.Service.Controller
                 resp.ContentLength64 = buffer.Length;
                 resp.OutputStream.Write(buffer, 0, buffer.Length);
             }
-            else
-            {
-                RespondWithNotFound(resp);
-            }
+
         }
 
         private static void ServeRegisterFile(HttpListenerResponse resp, string filePath)
@@ -63,10 +54,7 @@ namespace Server.Service.Controller
                 resp.ContentLength64 = buffer.Length;
                 resp.OutputStream.Write(buffer, 0, buffer.Length);
             }
-            else
-            {
-                RespondWithNotFound(resp);
-            }
+
         }
 
         private static void HandleGetRequest(HttpListenerRequest req, HttpListenerResponse resp)
@@ -80,75 +68,8 @@ namespace Server.Service.Controller
             {
                 ServeHtmlFile(resp, @"..\..\..\View\index.html");
             }
-        }
 
-        private static void HandleDeleteRequest(HttpListenerRequest req, HttpListenerResponse resp)
-        {
-            if (req.Url.AbsolutePath.StartsWith("/users/"))
-            {
-                string userId = req.Url.AbsolutePath.Substring("/users/".Length);
-                // Adicione a lógica para deletar o usuário com o userId
-                Console.WriteLine($"User {userId} deleted.");
-                byte[] buffer = Encoding.UTF8.GetBytes($"User {userId} deleted.");
-                resp.ContentLength64 = buffer.Length;
-                resp.OutputStream.Write(buffer, 0, buffer.Length);
-            }
-            else
-            {
-                HandleUnknownRequest(resp);
-            }
-        }
 
-        private static async void HandlePostRequest(HttpListenerRequest req, HttpListenerResponse resp)
-        {
-            if (req.Url.AbsolutePath == "/users")
-            {
-                using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
-                string jsonString = await reader.ReadToEndAsync();
-
-                Domain.DTO.User? user = JsonConvert.DeserializeObject<Domain.DTO.User>(jsonString);
-
-                UserRecordArgs userRecordArgs = user.ToUserRecordArgs();
-
-                var register = new UserService();
-
-                try
-                {
-                    await register.CreateUserAsync(userRecordArgs);
-                    resp.StatusCode = (int)HttpStatusCode.Created;
-                    resp.StatusDescription = "Created";
-                    await resp.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("{\"message\":\"Situado na mata\"}"));
-                }
-                catch (Exception ex)
-                {
-                    resp.StatusCode = (int)HttpStatusCode.BadRequest;
-                    resp.StatusDescription = "Bad Request";
-                    await resp.OutputStream.WriteAsync(Encoding.UTF8.GetBytes($"{{\"message\":\"{ex.Message}\"}}")); // Retorna mensagem em formato JSON
-                }
-                finally
-                {
-                    resp.Close();
-                }
-            }
-            else
-            {
-                HandleUnknownRequest(resp);
-            }
-        }
-
-        private static void HandleUnknownRequest(HttpListenerResponse resp)
-        {
-            byte[] buffer = Encoding.UTF8.GetBytes("Unknown request");
-            resp.ContentLength64 = buffer.Length;
-            resp.OutputStream.Write(buffer, 0, buffer.Length);
-        }
-
-        private static void RespondWithNotFound(HttpListenerResponse resp)
-        {
-            byte[] errorBuffer = Encoding.UTF8.GetBytes("404 - File Not Found");
-            resp.StatusCode = (int)HttpStatusCode.NotFound;
-            resp.ContentLength64 = errorBuffer.Length;
-            resp.OutputStream.Write(errorBuffer, 0, errorBuffer.Length);
         }
     }
 
