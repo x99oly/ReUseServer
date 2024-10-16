@@ -22,7 +22,8 @@ namespace Server.Service.Host
             Console.WriteLine($"Server is listening on {url}..." +
                 $"\nCheck our home page: {url}index" +
                 $"\nCheck our register page: {url}cadastro"+
-                $"\nCheck our user list page: {url}users");
+                $"\nCheck our user list page: {url}users"+
+                $"\nCheck our address list page: {url}address");
 
             StartServerListener(listener);
 

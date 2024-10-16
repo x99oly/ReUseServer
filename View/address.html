@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Endereço</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Cadastro de Endereço</h1>
+        <form id="addressForm">
+            <div class="form-group">
+                <label for="userId">ID do Usuário</label>
+                <input type="text" class="form-control" id="userId" placeholder="Digite o ID do usuário" required>
+            </div>
+            <div class="form-group">
+                <label for="cep">CEP</label>
+                <input type="text" class="form-control" id="cep" placeholder="Digite o CEP" required>
+            </div>
+            <div class="form-group">
+                <label for="street">Rua</label>
+                <input type="text" class="form-control" id="street" placeholder="Digite a rua" required>
+            </div>
+            <div class="form-group">
+                <label for="number">Número</label>
+                <input type="text" class="form-control" id="number" placeholder="Digite o número" required>
+            </div>
+            <div class="form-group">
+                <label for="complement">Complemento</label>
+                <input type="text" class="form-control" id="complement" placeholder="Digite o complemento (opcional)">
+            </div>
+            <div class="form-group">
+                <label for="neighborhood">Bairro</label>
+                <input type="text" class="form-control" id="neighborhood" placeholder="Digite o bairro" required>
+            </div>
+            <div class="form-group">
+                <label for="city">Cidade</label>
+                <input type="text" class="form-control" id="city" placeholder="Digite a cidade" required>
+            </div>
+            <div class="form-group">
+                <label for="state">Estado</label>
+                <input type="text" class="form-control" id="state" placeholder="Digite o estado" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar Endereço</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('addressForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('userId').value;
+            const cep = document.getElementById('cep').value;
+            const street = document.getElementById('street').value;
+            const number = document.getElementById('number').value;
+            const complement = document.getElementById('complement').value;
+            const neighborhood = document.getElementById('neighborhood').value;
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+
+            const addressData = {
+                userId,
+                cep,
+                street,
+                number,
+                complement,
+                neighborhood,
+                city,
+                state
+            };
+
+            try {
+                const response = await fetch('/api/address', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(addressData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao cadastrar o endereço');
+                }
+
+                alert('Endereço cadastrado com sucesso!');
+                document.getElementById('addressForm').reset();
+            } catch (error) {
+                console.error('Erro ao cadastrar o endereço:', error);
+                alert('Erro ao cadastrar o endereço.');
+            }
+        });
+    </script>
+
+</body>
+</html>

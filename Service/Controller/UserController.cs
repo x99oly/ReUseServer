@@ -54,6 +54,10 @@ namespace Server.Service.Controller
             {
                 ServeHtmlFile(resp, @"..\..\..\View\users.html");
             }
+            else if (req.Url.AbsolutePath == "/address")
+            {
+                ServeHtmlFile(resp, @"..\..\..\View\address.html");
+            }
             else if (req.Url.AbsolutePath == "/api/users")
             {
                 resp.ContentType = "application/json";
