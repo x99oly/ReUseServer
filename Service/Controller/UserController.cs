@@ -26,7 +26,7 @@ namespace Server.Service.Controller
                     break;
 
                 default:
-                    // HandleUnknownRequest(resp);
+                    HandleGetRequest(req, resp);
                     break;
             }
         }
@@ -44,28 +44,15 @@ namespace Server.Service.Controller
 
         }
 
-        private static void ServeRegisterFile(HttpListenerResponse resp, string filePath)
-        {
-            resp.ContentType = "text/html";
-            if (File.Exists(filePath))
-            {
-                string htmlContent = File.ReadAllText(filePath);
-                byte[] buffer = Encoding.UTF8.GetBytes(htmlContent);
-                resp.ContentLength64 = buffer.Length;
-                resp.OutputStream.Write(buffer, 0, buffer.Length);
-            }
-
-        }
-
         private static void HandleGetRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
             if (req.Url.AbsolutePath == "/cadastro")
             {
-                ServeRegisterFile(resp, @"..\..\..\View\cadastro.html");
+                ServeHtmlFile(resp, @"..\..\..\View\cadastro.html");
             }
             else if (req.Url.AbsolutePath == "/users")
             {
-                ServeRegisterFile(resp, @"..\..\..\View\users.html");
+                ServeHtmlFile(resp, @"..\..\..\View\users.html");
             }
             else if (req.Url.AbsolutePath == "/api/users")
             {
