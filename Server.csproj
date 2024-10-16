@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Keys\" />
-    <Folder Include="Service\Address\" />
   </ItemGroup>
 
   <ItemGroup>
