@@ -9,7 +9,7 @@ namespace Server.Service.Host
 {
     class HttpServer : IServidor
     {
-        UserController userController = new UserController();
+        IController controller = new MainController();
 
         /// <summary>
         /// Inicia o serverHTTP e fornece os links das páginas no console.
@@ -34,7 +34,7 @@ namespace Server.Service.Host
             while (true)
             {
                 HttpListenerContext context = listener.GetContext();
-                userController.ProcessRequest(context);
+                controller.ProcessRequest(context);
             }
         }
 

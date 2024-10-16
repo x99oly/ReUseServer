@@ -1,11 +1,10 @@
-﻿using Server.Interface;
-using Server.Service.User;
+﻿using Server.Service.User;
 using System.Net;
 using Server.Interface;
 
 namespace Server.Service.Controller
 {
-    internal class UserController : IController
+    internal class AddressController : IController
     {
         public async Task ProcessRequest(HttpListenerContext context)
         {
@@ -34,10 +33,10 @@ namespace Server.Service.Controller
                     HandleGetRequest(req, resp);
                     break;
             }
-        }
+        }    
 
         public void HandleGetRequest(HttpListenerRequest req, HttpListenerResponse resp)
-        {
+        {            
             if (req.Url.AbsolutePath == "/api/users")
             {
                 resp.ContentType = "application/json";
@@ -61,14 +60,10 @@ namespace Server.Service.Controller
                 resp.ContentType = "application/json";
                 GetUserService.HandleGetUserByPhoneRequest(req, resp);
             }
-         
         }
 
-        public void HandlePutRequest(HttpListenerRequest req, HttpListenerResponse resp) 
-        {
-            Console.WriteLine("Ainda não implementado!");
-        }
-        public async void HandleDeleteRequest(HttpListenerRequest req, HttpListenerResponse resp) 
+        public async void HandlePutRequest(HttpListenerRequest req, HttpListenerResponse resp) { }
+        public async void HandleDeleteRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
             await DeleteUserService.HandleDeleteRequest(req, resp);
         }
@@ -78,6 +73,4 @@ namespace Server.Service.Controller
         }
 
     }
-
 }
-

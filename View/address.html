@@ -63,7 +63,7 @@
     <script>
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const email = getEmailFromSessionStorage();
+            const email = getEmailFromStorage();
             if (email) {
                 console.log('Email recuperado:', email);
 
@@ -100,8 +100,8 @@
 
 
 
-        function getEmailFromSessionStorage() {
-            return sessionStorage.getItem('email');
+        function getEmailFromStorage() {
+            return localStorage.getItem('email');
         }
 
         document.getElementById('addressForm').addEventListener('submit', async function (event) {
