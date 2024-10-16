@@ -61,6 +61,49 @@
     </div>
 
     <script>
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const email = getEmailFromSessionStorage();
+            if (email) {
+                console.log('Email recuperado:', email);
+
+                try {
+                    const response = await fetch(`/api/users/email?email=${encodeURIComponent(email)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Erro ao recuperar usuário pelo email');
+                    }
+
+                    const userData = await response.json();
+                    console.log('Dados do usuário recuperado:', userData);
+
+                    // O valor do UID está dentro de uma string JSON no campo "message"
+                    const userObject = JSON.parse(userData.message); // Analisa a string JSON
+                    const idUsuario = userObject.Uid; // Atribui o UID à variável
+
+                    alert('ID do Usuário: ' + idUsuario); // Mostra o ID do usuário em um alert
+                    document.getElementById('userId').value = idUsuario; // Preenche o campo ID com o UID
+                } catch (error) {
+                    console.error('Erro ao recuperar usuário:', error);
+                    alert('Erro ao recuperar os dados do usuário.');
+                }
+            } else {
+                console.log('Nenhum email encontrado no sessionStorage.');
+            }
+        });
+
+
+
+
+        function getEmailFromSessionStorage() {
+            return sessionStorage.getItem('email');
+        }
+
         document.getElementById('addressForm').addEventListener('submit', async function (event) {
             event.preventDefault();
 
@@ -105,6 +148,7 @@
             }
         });
     </script>
+
 
 </body>
 </html>
