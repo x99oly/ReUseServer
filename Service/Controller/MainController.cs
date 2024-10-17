@@ -1,4 +1,4 @@
-﻿using Server.Interface;
+﻿using Server.Domain.Interface;
 using System.Net;
 using System.Text;
 

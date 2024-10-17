@@ -1,7 +1,6 @@
-﻿using Server.Interface;
-using Server.Service.User;
+﻿using Server.Service.User;
 using System.Net;
-using Server.Interface;
+using Server.Domain.Interface;
 
 namespace Server.Service.Controller
 {

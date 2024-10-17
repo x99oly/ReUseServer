@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 
-namespace Server.Interface
+namespace Server.Domain.Interface
 {
     public interface IController
     {

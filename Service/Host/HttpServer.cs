@@ -3,7 +3,7 @@ using System.Net;
 
 // Personal Namespaces
 using Server.Service.Controller;
-using Server.Interface;
+using Server.Domain.Interface;
 
 namespace Server.Service.Host
 {
