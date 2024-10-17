@@ -28,6 +28,10 @@ namespace Server.Domain.Model
             Complement = complemento;
         }
 
+        public Address()
+        {
+        }
+
         public override string ToString()
         {
             return $"{Street}, {Number} {Complement} - {Neighborhood}, {City}/{State}, {PostalCode}";
