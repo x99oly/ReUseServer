@@ -54,14 +54,13 @@
             </div>
             <div class="form-group">
                 <label for="state">Estado</label>
-                <input type="text" class="form-control" id="state" placeholder="Digite o estado" required>
+                <input type="text" class="form-control" id="state" placeholder="Digite o estado (UF)" required>
             </div>
             <button type="submit" class="btn btn-primary">Cadastrar Endereço</button>
         </form>
     </div>
 
     <script>
-
         document.addEventListener('DOMContentLoaded', async () => {
             const email = getEmailFromStorage();
             if (email) {
@@ -97,9 +96,6 @@
             }
         });
 
-
-
-
         function getEmailFromStorage() {
             return localStorage.getItem('email');
         }
@@ -107,26 +103,25 @@
         document.getElementById('addressForm').addEventListener('submit', async function (event) {
             event.preventDefault();
 
-            const userId = document.getElementById('userId').value;
-            const cep = document.getElementById('cep').value;
-            const street = document.getElementById('street').value;
-            const number = document.getElementById('number').value;
-            const complement = document.getElementById('complement').value;
-            const neighborhood = document.getElementById('neighborhood').value;
-            const city = document.getElementById('city').value;
-            const state = document.getElementById('state').value;
+            const UserId = document.getElementById('userId').value;
+            const PostalCode = document.getElementById('cep').value;
+            const Street = document.getElementById('street').value;
+            const Number = document.getElementById('number').value;
+            const Complement = document.getElementById('complement').value;
+            const Neighborhood = document.getElementById('neighborhood').value;
+            const City = document.getElementById('city').value;
+            const State = document.getElementById('state').value;
 
             const addressData = {
-                userId,
-                cep,
-                street,
-                number,
-                complement,
-                neighborhood,
-                city,
-                state
+                UserId: UserId,
+                PostalCode: PostalCode,
+                Street: Street,
+                Number: Number,
+                Complement: Complement,
+                Neighborhood: Neighborhood,
+                City: City,
+                State: State
             };
-
             try {
                 const response = await fetch('/api/address', {
                     method: 'POST',
@@ -141,14 +136,11 @@
                 }
 
                 alert('Endereço cadastrado com sucesso!');
-                document.getElementById('addressForm').reset();
             } catch (error) {
                 console.error('Erro ao cadastrar o endereço:', error);
                 alert('Erro ao cadastrar o endereço.');
             }
         });
     </script>
-
-
 </body>
 </html>

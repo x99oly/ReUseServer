@@ -15,7 +15,6 @@ FirebaseApp.Create(new AppOptions()
 });
 Console.WriteLine("Firebase SDK inicializado!");
 
-conectar();
 
 // Inicializa o servidor HTTP
 IServidor server = new HttpServer();

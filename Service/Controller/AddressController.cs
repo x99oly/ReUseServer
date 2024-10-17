@@ -1,6 +1,9 @@
 ﻿using Server.Service.User;
 using System.Net;
 using Server.Domain.Interface;
+using System.Text;
+using Server.Domain.Model;
+using System.Text.Json;
 
 namespace Server.Service.Controller
 {
@@ -69,7 +72,35 @@ namespace Server.Service.Controller
         }
         public async void HandlePostRequest(HttpListenerRequest req, HttpListenerResponse resp)
         {
-            await PostUserService.HandlePostRequest(req, resp);
+            string requestBody = null;
+            using (var reader = new StreamReader(req.InputStream, req.ContentEncoding))
+            {
+                // Lê o corpo da requisição
+                requestBody = await reader.ReadToEndAsync();
+            }
+
+            // Exibe os dados recebidos no console
+            Console.WriteLine($"\nDados recebidos: {requestBody}\n" );
+
+            // Agora cria o objeto Address manualmente
+            var address = Address.ParseAddressJson(requestBody);
+
+            // Exibe o endereço criado no console
+            Console.WriteLine("Endereço recebido: " +
+                $"\nUserId: {address.UserId}, " +
+                $"\nCEP: {address.PostalCode}, " +
+                $"\nRua: {address.Street}, " +
+                $"\nNúmero: {address.Number}, " +
+                $"\nBairro: {address.Neighborhood}, " +
+                $"\nCidade: {address.City}, " +
+                $"\nEstado: {address.State}, " +
+                $"\nComplemento: {address.Complement}");
+
+            // Resposta de sucesso
+            resp.StatusCode = (int)HttpStatusCode.OK;
+            resp.ContentType = "application/json";
+            await resp.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("{\"message\":\"Dados recebidos com sucesso\"}"), 0, "{\"message\":\"Dados recebidos com sucesso\"}".Length);
+            resp.Close();
         }
 
     }
